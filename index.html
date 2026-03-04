@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Eclipse Softwares | Oficial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#a855f7',
+                        eclipseDark: '#050505',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #050505; 
+            color: #fff; 
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        #eclipse-intro {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s cubic-bezier(0.87, 0, 0.13, 1);
+        }
+
+        .corona {
+            width: 180px;
+            height: 180px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 100px 20px rgba(168, 85, 247, 0.8);
+            position: relative;
+        }
+
+        .moon-mask {
+            width: 185px;
+            height: 185px;
+            background: #000;
+            border-radius: 50%;
+            position: absolute;
+            transform: translateX(-250%);
+            animation: total-eclipse 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes total-eclipse {
+            0% { transform: translateX(-250%); }
+            50% { transform: translateX(0%); box-shadow: 0 0 120px 10px rgba(168, 85, 247, 1); }
+            100% { transform: translateX(250%); }
+        }
+
+        .grid-pattern {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(168, 85, 247, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(168, 85, 247, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: -1;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+        }
+
+        .glow-orb {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 12, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(168, 85, 247, 0.15);
+        }
+
+        .hero-title {
+            font-weight: 800;
+            font-size: clamp(3rem, 10vw, 7rem);
+            line-height: 0.9;
+            letter-spacing: -0.04em;
+            background: linear-gradient(180deg, #fff 30%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hidden-section { display: none !important; }
+
+        #notification-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            padding: 16px 24px;
+            border-radius: 12px;
+            background: rgba(15, 15, 18, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: slideIn 0.3s ease forwards;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-error { border-left: 4px solid #ef4444; }
+        .toast-success { border-left: 4px solid #a855f7; }
+    </style>
+</head>
+<body>
+
+    <div id="notification-container"></div>
+
+    <div id="eclipse-intro">
+        <div class="corona">
+            <div class="moon-mask"></div>
+            <span class="absolute mt-64 text-zinc-600 tracking-[1em] text-[10px] uppercase font-bold">INICIANDO ECLIPSE</span>
+        </div>
+    </div>
+
+    <div class="grid-pattern"></div>
+    <div id="cursor-glow" class="glow-orb"></div>
+
+    <div id="landing-page" class="relative z-10">
+        <nav class="flex justify-center p-6 fixed w-full top-0">
+            <div class="glass-panel max-w-5xl w-full rounded-2xl px-8 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.5)]">
+                        <i class="ri-moon-clear-line text-white text-xl"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tighter uppercase">Eclipse Softwares</span>
+                </div>
+                <button onclick="openAuth()" class="bg-white text-black px-6 py-2.5 rounded-xl text-xs font-black hover:bg-primary hover:text-white transition-all shadow-lg">ÁREA DO CLIENTE</button>
+            </div>
+        </nav>
+
+        <section class="min-h-screen flex flex-col items-center justify-center text-center px-4">
+            <div class="px-4 py-1.5 mb-8 rounded-full border border-primary/20 bg-primary/5 text-primary text-[11px] font-black tracking-[0.3em] uppercase">Undetected 2026</div>
+            <h1 class="hero-title mb-8 uppercase">Eclipse<br>Softwares</h1>
+            <p class="text-zinc-400 text-lg max-w-xl mb-12">Performance máxima e segurança impenetrável.</p>
+            <button onclick="openAuth()" class="bg-primary text-white px-12 py-5 rounded-2xl font-black tracking-widest hover:brightness-125 shadow-lg shadow-primary/20">COMEÇAR AGORA</button>
+        </section>
+    </div>
+
+    <div id="auth-modal" class="hidden-section fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div class="glass-panel w-full max-w-md p-10 rounded-[2.5rem] relative">
+            <button onclick="closeAuth()" class="absolute top-6 right-6 text-zinc-500 hover:text-white"><i class="ri-close-line text-2xl"></i></button>
+            <h2 class="text-2xl font-black mb-8 uppercase">Acesso</h2>
+            <div class="space-y-4">
+                <input id="email" type="email" placeholder="Email" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-primary">
+                <input id="password" type="password" placeholder="Senha" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-primary">
+                <button id="btn-signin" onclick="signIn()" class="w-full bg-primary text-white py-4 rounded-xl font-black uppercase tracking-widest">Entrar</button>
+                <button onclick="signUp()" class="w-full text-zinc-500 text-xs hover:text-white mt-2">Criar conta</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-page" class="hidden-section relative z-10 p-6 pt-32 min-h-screen">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex justify-between items-center mb-12">
+                <h2 class="text-3xl font-black uppercase">Painel <span id="user-display" class="text-primary"></span></h2>
+                <button onclick="signOut()" class="bg-red-500/10 text-red-500 px-6 py-2 rounded-xl text-xs font-bold border border-red-500/20">LOGOUT</button>
+            </div>
+            <div class="glass-panel p-8 rounded-3xl max-w-md">
+                <h3 class="font-bold mb-4 uppercase text-sm text-zinc-400">Ativação</h3>
+                <div class="flex gap-2">
+                    <input id="license-key" type="text" placeholder="ECLIPSE-XXXX" class="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-primary">
+                    <button onclick="showToast('Key inválida ou já usada', 'error')" class="bg-primary px-6 rounded-xl font-bold">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://dfplxmdhstpnptlmopyv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmcGx4bWRoc3RwbnB0bG1vcHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODgxODksImV4cCI6MjA4ODE2NDE4OX0.ZKQx1ZL3HOSRHwltgD6Sc2Uf1dfPaumb0UpawN3N8ZQ';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('notification-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            const icon = type === 'success' ? 'ri-checkbox-circle-fill' : 'ri-error-warning-fill';
+            const color = type === 'success' ? 'text-primary' : 'text-red-500';
+            toast.innerHTML = `<i class="${icon} ${color} text-xl"></i> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function openAuth() { document.getElementById('auth-modal').classList.remove('hidden-section'); }
+        function closeAuth() { document.getElementById('auth-modal').classList.add('hidden-section'); }
+
+        async function signIn() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('btn-signin');
+            
+            if(!email || !password) return showToast('Preencha todos os campos', 'error');
+            
+            btn.innerText = 'CARREGANDO...';
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            
+            if (error) {
+                showToast(error.message, 'error');
+                btn.innerText = 'ENTRAR';
+            } else {
+                showToast('Acesso concedido!');
+                setTimeout(() => location.reload(), 1000);
+            }
+        }
+
+        async function signUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const { error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) showToast(error.message, 'error'); else showToast('Verifique seu email!');
+        }
+
+        async function signOut() { await supabaseClient.auth.signOut(); location.reload(); }
+
+        async function checkUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                document.getElementById('landing-page').classList.add('hidden-section');
+                document.getElementById('dashboard-page').classList.remove('hidden-section');
+                document.getElementById('user-display').innerText = user.email.split('@')[0];
+            }
+        }
+
+        const cursorGlow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX - 200 + 'px';
+            cursorGlow.style.top = e.clientY - 200 + 'px';
+        });
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const intro = document.getElementById('eclipse-intro');
+                intro.style.opacity = '0';
+                setTimeout(() => { intro.classList.add('hidden-section'); }, 1000);
+            }, 3500);
+            checkUser();
+        });
+    </script>
+</body>
+</html>
