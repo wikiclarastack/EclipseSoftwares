@@ -17,7 +17,7 @@
             color: #ffffff; 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             overflow-x: hidden;
-            min-height: screen;
+            min-height: 100vh;
         }
 
         .glass { 
@@ -89,7 +89,7 @@
                 <i class="ri-discord-fill text-3xl"></i>
                 Entrar com Discord
             </button>
-            <p class="text-[10px] text-zinc-600 font-bold uppercase mt-6 tracking-widest">Painel de Controle v2.0</p>
+            <p class="text-[10px] text-zinc-600 font-bold uppercase mt-6 tracking-widest">Painel de Controle v2.5</p>
         </div>
     </div>
 
@@ -122,7 +122,7 @@
 
         <main class="flex-1 p-8 md:p-16">
             <div id="tab-home" class="tab-content active">
-                <h1 class="text-5xl font-black mb-10 tracking-tighter uppercase">Bem-vindo, <span class="text-purple-600">Membro</span></h1>
+                <h1 class="text-5xl font-black mb-10 tracking-tighter uppercase">Painel <span class="text-purple-600">Eclipse</span></h1>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="glass p-8 rounded-[2rem]">
@@ -217,12 +217,14 @@
             const val = document.getElementById('roblox-id-input').value;
             if (!val || isNaN(val)) return showToast("Digite um ID válido", "error");
             
+            // Aqui salvamos o roblox_id, username e a avatar_url
             const { error } = await supabaseClient.from('profiles').update({ 
                 roblox_id: val,
-                username: user.user_metadata.full_name
+                username: user.user_metadata.full_name,
+                avatar_url: user.user_metadata.avatar_url // Crucial para o Lua ler a foto
             }).eq('id', user.id);
             
-            if (error) showToast(error.message, 'error'); else { showToast('Sucesso!'); location.reload(); }
+            if (error) showToast(error.message, 'error'); else { showToast('Dados Sincronizados!'); location.reload(); }
         }
 
         async function redeemKey() {
