@@ -3,85 +3,36 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Eclipse Softwares | Dashboard</title>
+    <title>Eclipse | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { background-color: #020202; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+        body { background-color: #020202; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass { background: rgba(15, 15, 15, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .tab-btn.active { background: rgba(168, 85, 247, 0.1); border-left: 4px solid #a855f7; color: #fff; }
-        #notification-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { padding: 16px 24px; border-radius: 12px; background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); animation: slideIn 0.3s ease forwards; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
-
-    <div id="notification-container"></div>
-
     <div id="login-screen" class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-        <h1 class="text-6xl md:text-8xl font-black tracking-tighter uppercase mb-12">ECLIPSE <span class="text-purple-600">SOFTWARES</span></h1>
-        <div class="glass w-full max-w-[440px] p-10 rounded-[2.5rem]">
-            <button onclick="signInWithDiscord()" class="w-full bg-[#5865F2] py-5 rounded-2xl font-black uppercase flex items-center justify-center gap-3 hover:scale-[1.02] transition-all">
+        <h1 class="text-6xl font-black mb-12 uppercase italic">ECLIPSE <span class="text-purple-600">SOFTWARES</span></h1>
+        <div class="glass w-full max-w-[400px] p-10 rounded-[2.5rem]">
+            <button id="btn-discord" class="w-full bg-[#5865F2] py-5 rounded-2xl font-black uppercase flex items-center justify-center gap-3">
                 <i class="ri-discord-fill text-3xl"></i> Entrar com Discord
             </button>
         </div>
     </div>
 
-    <div id="main-dashboard" class="hidden min-h-screen flex flex-col md:flex-row">
-        <aside class="w-full md:w-80 border-r border-white/5 p-8 glass">
-            <div class="flex items-center gap-4 mb-12 p-3 bg-white/5 rounded-2xl">
-                <img id="user-avatar" src="" class="w-12 h-12 rounded-xl border border-purple-600/50">
-                <div class="overflow-hidden">
-                    <div id="user-display" class="font-black uppercase truncate text-sm">Usuário</div>
-                    <div id="user-badge" class="text-[9px] text-zinc-500 font-black uppercase font-bold">Verificando...</div>
-                </div>
-            </div>
-            <nav class="space-y-2">
-                <button onclick="switchTab('tab-home', this)" class="tab-btn active w-full flex items-center gap-4 p-4 rounded-xl font-bold">DASHBOARD</button>
-                <button onclick="switchTab('tab-license', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-xl font-bold">LICENÇA</button>
-                <button onclick="switchTab('tab-admin', this)" id="admin-menu" class="hidden tab-btn w-full p-4 rounded-xl text-red-500 font-bold uppercase">ADMIN</button>
-            </nav>
-            <button onclick="signOut()" class="w-full mt-auto p-4 text-zinc-500 font-bold hover:text-red-500">SAIR</button>
-        </aside>
-
-        <main class="flex-1 p-8 md:p-16">
-            <div id="tab-home" class="tab-content active">
-                <h1 class="text-5xl font-black mb-10 uppercase italic">PAINEL <span class="text-purple-600">ECLIPSE</span></h1>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="glass p-8 rounded-[2rem]">
-                        <h3 class="text-zinc-500 font-bold mb-4 uppercase text-xs">Roblox ID</h3>
-                        <div id="roblox-status" class="text-xl font-black mb-6 text-red-500 uppercase">Não Vinculado</div>
-                        <input id="roblox-id-input" type="text" placeholder="ID do Roblox" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-4 outline-none">
-                        <button onclick="updateRobloxID()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase hover:bg-purple-600 hover:text-white transition-all">Sincronizar ID</button>
-                    </div>
-                    <div class="glass p-8 rounded-[2rem]">
-                        <h3 class="text-zinc-500 font-bold mb-4 uppercase text-xs">Assinatura</h3>
-                        <div id="access-status" class="text-xl font-black mb-6 text-red-500 uppercase">Inativa</div>
-                        <a href="https://discord.gg/yHN3P4BVNc" target="_blank" class="block w-full bg-purple-600 py-4 rounded-xl font-black text-center uppercase">Comprar</a>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-license" class="tab-content">
-                <h1 class="text-4xl font-black mb-10 uppercase">Ativar Key</h1>
-                <div class="glass p-10 rounded-[2.5rem] max-w-xl">
-                    <input id="license-key-input" type="text" placeholder="ECLIPSE-XXXX" class="w-full bg-white/5 border border-white/10 p-5 rounded-xl text-center font-mono text-xl mb-4">
-                    <button onclick="redeemKey()" class="w-full bg-purple-600 py-5 rounded-xl font-black uppercase shadow-lg">Ativar Agora</button>
-                </div>
-            </div>
-
-            <div id="tab-admin" class="tab-content">
-                <h1 class="text-4xl font-black mb-10 text-red-500 uppercase">Gerador</h1>
-                <div class="glass p-10 rounded-[2.5rem] max-w-xl text-center">
-                    <input id="days-count" type="number" value="30" class="w-24 bg-white/5 p-4 rounded-xl text-center font-bold mb-4">
-                    <button onclick="createKey()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase">Gerar Key</button>
-                    <div id="key-output" onclick="copyKey()" class="p-6 mt-4 bg-purple-600/10 border-2 border-dashed border-purple-600/30 rounded-xl font-mono text-purple-500 font-black text-lg hidden cursor-pointer"></div>
-                </div>
+    <div id="main-dashboard" class="hidden min-h-screen flex">
+        <main class="flex-1 p-16">
+            <h1 class="text-5xl font-black mb-10">PAINEL <span class="text-purple-600">ECLIPSE</span></h1>
+            <div class="glass p-8 rounded-[2rem] max-w-md">
+                <h3 class="text-zinc-500 font-bold mb-4 uppercase text-xs">Roblox ID</h3>
+                <div id="roblox-status" class="text-xl font-black mb-6 text-red-500">NÃO VINCULADO</div>
+                <input id="roblox-id-input" type="text" placeholder="ID do Roblox" class="w-full bg-white/5 p-4 rounded-xl mb-4 outline-none border border-white/10">
+                <button onclick="updateRobloxID()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase">Sincronizar ID</button>
             </div>
         </main>
     </div>
@@ -91,80 +42,37 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmcGx4mWRoc3RwbnB0bG1vcHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODgxODksImV4cCI6MjA4ODE2NDE4OX0.ZKQx1ZL3HOSRHwltgD6Sc2Uf1dfPaumb0UpawN3N8ZQ';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        function showToast(m, t='success') {
-            const c = document.getElementById('notification-container');
-            const d = document.createElement('div');
-            d.className = 'toast';
-            d.style.borderLeft = t === 'success' ? '4px solid #a855f7' : '4px solid #ef4444';
-            d.innerHTML = `<span class="font-bold text-sm uppercase">${m}</span>`;
-            c.appendChild(d); setTimeout(() => d.remove(), 4000);
-        }
-
+        // Define a função ANTES de qualquer clique
         async function signInWithDiscord() {
-            await supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.origin } });
+            console.log("Iniciando login...");
+            await supabase.auth.signInWithOAuth({ 
+                provider: 'discord', 
+                options: { redirectTo: window.location.origin } 
+            });
         }
 
-        async function loadDashboard(user) {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-dashboard').classList.remove('hidden');
-            document.getElementById('user-display').innerText = user.user_metadata.full_name;
-            document.getElementById('user-avatar').src = user.user_metadata.avatar_url;
-
-            let { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-            if (!profile) {
-                const { data: newProfile } = await supabase.from('profiles').insert([{ id: user.id, username: user.user_metadata.full_name, has_access: false }]).select().single();
-                profile = newProfile;
-            }
-
-            if (profile.is_admin) document.getElementById('admin-menu').classList.remove('hidden');
-            if (profile.has_access) {
-                const s = document.getElementById('access-status');
-                s.innerText = "ATIVA"; s.classList.replace('text-red-500', 'text-green-500');
-                document.getElementById('user-badge').innerText = "ASSINANTE";
-            }
-            if (profile.roblox_id) {
-                const r = document.getElementById('roblox-status');
-                r.innerText = "VINCULADO: " + profile.roblox_id; r.classList.replace('text-red-500', 'text-green-500');
-            }
-        }
+        // Atribui o evento via ID para evitar o erro de "not defined"
+        document.getElementById('btn-discord').onclick = signInWithDiscord;
 
         async function updateRobloxID() {
             const { data: { user } } = await supabase.auth.getUser();
-            const { data: p } = await supabase.from('profiles').select('has_access').eq('id', user.id).single();
-            if (!p.has_access) return showToast("Assine primeiro!", "error");
-            
             const rid = document.getElementById('roblox-id-input').value;
-            await supabase.from('profiles').update({ roblox_id: rid }).eq('id', user.id);
-            showToast("ID Sincronizado!"); location.reload();
-        }
-
-        async function redeemKey() {
-            const { data: { user } } = await supabase.auth.getUser();
-            const key = document.getElementById('license-key-input').value;
-            const { data: kData } = await supabase.from('license_keys').select('*').eq('key_code', key).is('used_by', null).single();
             
-            if (!kData) return showToast("Key inválida!", "error");
-            await supabase.from('license_keys').update({ used_by: user.id, used_at: new Date() }).eq('id', kData.id);
-            await supabase.from('profiles').update({ has_access: true }).eq('id', user.id);
-            showToast("Acesso Liberado!"); location.reload();
+            // Agora salvando username e avatar para o script Lua usar
+            await supabase.from('profiles').update({ 
+                roblox_id: rid,
+                username: user.user_metadata.full_name,
+                avatar_url: user.user_metadata.avatar_url 
+            }).eq('id', user.id);
+            
+            alert("Sincronizado!"); location.reload();
         }
-
-        async function createKey() {
-            const k = "ECLIPSE-" + Math.random().toString(36).substr(2,9).toUpperCase();
-            await supabase.from('license_keys').insert([{ key_code: k, duration_days: document.getElementById('days-count').value }]);
-            document.getElementById('key-output').innerText = k;
-            document.getElementById('key-output').classList.remove('hidden');
-        }
-
-        function switchTab(id, b) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        async function signOut() { await supabase.auth.signOut(); location.reload(); }
 
         supabase.auth.onAuthStateChange((event, session) => {
-            if (session) loadDashboard(session.user);
+            if (session) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-dashboard').classList.remove('hidden');
+            }
         });
     </script>
 </body>
