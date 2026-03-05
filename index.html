@@ -15,7 +15,7 @@
 
     <div id="login-screen" class="min-h-screen flex items-center justify-center">
         <div class="text-center">
-            <h1 class="text-6xl font-black mb-8">ECLIPSE <span class="text-purple-600">SOFTWARES</span></h1>
+            <h1 class="text-6xl font-black mb-8 italic">ECLIPSE <span class="text-purple-600">SOFTWARES</span></h1>
             <button id="auth-btn" class="bg-[#5865F2] px-8 py-4 rounded-xl font-bold uppercase hover:scale-105 transition-all">
                 Conectar com Discord
             </button>
@@ -29,7 +29,7 @@
                     <img id="u-pic" class="w-12 h-12 rounded-full border-2 border-purple-600">
                     <div>
                         <p id="u-name" class="font-bold text-lg"></p>
-                        <p id="u-status" class="text-xs text-zinc-500 uppercase tracking-widest font-bold">Verificando...</p>
+                        <p id="u-status" class="text-xs text-zinc-500 uppercase font-bold">Verificando...</p>
                     </div>
                 </div>
                 <button id="logout-btn" class="text-zinc-500 hover:text-red-500 font-bold">SAIR</button>
@@ -38,13 +38,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="glass p-8 rounded-3xl">
                     <h3 class="text-zinc-500 font-bold text-xs uppercase mb-2">Conta Roblox</h3>
-                    <p id="rbx-status" class="text-2xl font-black text-red-500 mb-6 italic">NÃO VINCULADO</p>
+                    <p id="rbx-status" class="text-2xl font-black text-red-500 mb-6 italic text-green-500">NÃO VINCULADO</p>
                     <input id="rbx-input" type="text" placeholder="ID Numérico" class="w-full bg-white/5 p-4 rounded-xl mb-4 border border-white/10">
                     <button id="sync-btn" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase">Sincronizar</button>
                 </div>
 
-                <div id="lic-section" class="glass p-8 rounded-3xl">
-                    <h3 class="text-zinc-500 font-bold text-xs uppercase mb-2">Resgatar Acesso</h3>
+                <div class="glass p-8 rounded-3xl">
+                    <h3 class="text-zinc-500 font-bold text-xs uppercase mb-2">Licença</h3>
                     <input id="key-input" type="text" placeholder="ECLIPSE-XXXX" class="w-full bg-white/5 p-4 rounded-xl mb-4 border border-white/10 text-center font-mono">
                     <button id="redeem-btn" class="w-full bg-purple-600 py-4 rounded-xl font-black uppercase">Ativar Key</button>
                 </div>
@@ -55,49 +55,27 @@
     <script>
         const SB_URL = 'https://dfplxmdhstpnptlmopyv.supabase.co';
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmcGx4mWRoc3RwbnB0bG1vcHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODgxODksImV4cCI6MjA4ODE2NDE4OX0.ZKQx1ZL3HOSRHwltgD6Sc2Uf1dfPaumb0UpawN3N8ZQ';
-        
-        let supabase;
+        const supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
 
-        // 1. ESPERA O SDK CARREGAR
-        const init = setInterval(() => {
-            if (window.supabase) {
-                clearInterval(init);
-                supabase = window.supabase.createClient(SB_URL, SB_KEY);
-                startApp();
-            }
-        }, 100);
+        document.getElementById('auth-btn').onclick = () => {
+            supabaseClient.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.origin } });
+        };
 
-        function startApp() {
-            // Eventos de Botão (Sem usar onclick no HTML)
-            document.getElementById('auth-btn').addEventListener('click', () => {
-                supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.origin } });
-            });
-
-            document.getElementById('logout-btn').addEventListener('click', async () => {
-                await supabase.auth.signOut();
-                location.reload();
-            });
-
-            document.getElementById('sync-btn').addEventListener('click', syncRoblox);
-            document.getElementById('redeem-btn').addEventListener('click', redeemKey);
-
-            // Checar Sessão
-            supabase.auth.onAuthStateChange((event, session) => {
-                if (session) loadUser(session.user);
-            });
-        }
+        document.getElementById('logout-btn').onclick = async () => {
+            await supabaseClient.auth.signOut();
+            location.reload();
+        };
 
         async function loadUser(user) {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('dash-screen').classList.remove('hidden');
-            
             document.getElementById('u-name').innerText = user.user_metadata.full_name;
             document.getElementById('u-pic').src = user.user_metadata.avatar_url;
 
-            let { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+            let { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
 
             if (!profile) {
-                const { data } = await supabase.from('profiles').insert([{ 
+                const { data } = await supabaseClient.from('profiles').insert([{ 
                     id: user.id, 
                     username: user.user_metadata.full_name,
                     avatar_url: user.user_metadata.avatar_url,
@@ -107,44 +85,41 @@
             }
 
             if (profile.has_access) {
-                const st = document.getElementById('u-status');
-                st.innerText = "CLIENTE ECLIPSE";
-                st.style.color = "#a855f7";
-                document.getElementById('lic-section').classList.add('hidden'); // Esconde se já tem
+                document.getElementById('u-status').innerText = "CLIENTE ECLIPSE";
+                document.getElementById('u-status').style.color = "#a855f7";
             }
 
             if (profile.roblox_id) {
                 const rb = document.getElementById('rbx-status');
                 rb.innerText = "VINCULADO: " + profile.roblox_id;
-                rb.classList.replace('text-red-500', 'text-green-500');
+                rb.style.color = "#22c55e";
             }
         }
 
-        async function syncRoblox() {
-            const { data: { session } } = await supabase.auth.getSession();
-            const { data: p } = await supabase.from('profiles').select('has_access').eq('id', session.user.id).single();
-            
-            if (!p.has_access) return alert("Assine primeiro para vincular o ID!");
+        document.getElementById('sync-btn').onclick = async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const { data: p } = await supabaseClient.from('profiles').select('has_access').eq('id', session.user.id).single();
+            if (!p.has_access) return alert("Assine primeiro!");
 
             const val = document.getElementById('rbx-input').value;
-            if (!val || isNaN(val)) return alert("Digite um ID válido!");
-
-            await supabase.from('profiles').update({ roblox_id: val }).eq('id', session.user.id);
+            await supabaseClient.from('profiles').update({ roblox_id: val }).eq('id', session.user.id);
             location.reload();
-        }
+        };
 
-        async function redeemKey() {
-            const { data: { session } } = await supabase.auth.getSession();
-            const key = document.getElementById('key-input').value;
+        document.getElementById('redeem-btn').onclick = async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const k = document.getElementById('key-input').value;
+            const { data: kData } = await supabaseClient.from('license_keys').select('*').eq('key_code', k).is('used_by', null).single();
             
-            const { data: kData } = await supabase.from('license_keys').select('*').eq('key_code', key).is('used_by', null).single();
             if (!kData) return alert("Key inválida!");
-
-            await supabase.from('license_keys').update({ used_by: session.user.id, used_at: new Date() }).eq('id', kData.id);
-            await supabase.from('profiles').update({ has_access: true }).eq('id', session.user.id);
-            alert("Acesso Ativado!");
+            await supabaseClient.from('license_keys').update({ used_by: session.user.id, used_at: new Date() }).eq('id', kData.id);
+            await supabaseClient.from('profiles').update({ has_access: true }).eq('id', session.user.id);
             location.reload();
-        }
+        };
+
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session) loadUser(session.user);
+        });
     </script>
 </body>
 </html>
