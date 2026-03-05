@@ -9,8 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #020202 !important; color: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; min-height: 100vh; }
+        body { background-color: #020202; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
         .glass { background: rgba(15, 15, 15, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -18,86 +17,70 @@
         #notification-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 16px 24px; border-radius: 12px; background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); animation: slideIn 0.3s ease forwards; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        .bg-glow { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 100%; background: radial-gradient(circle at 50% -20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%); pointer-events: none; z-index: -1; }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow"></div>
     <div id="notification-container"></div>
 
     <div id="login-screen" class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-        <div class="mb-12">
-            <h1 class="text-6xl md:text-8xl font-black tracking-tighter uppercase mb-4">ECLIPSE <span class="text-purple-600">SOFTWARES</span></h1>
-            <p class="text-zinc-500 text-lg font-bold uppercase tracking-widest">The Ultimate Injectable Skill</p>
-        </div>
-        <div class="glass w-full max-w-[440px] p-10 rounded-[2.5rem] border-purple-500/20 shadow-2xl">
-            <button onclick="signInWithDiscord()" class="w-full bg-[#5865F2] py-5 rounded-2xl font-black uppercase flex items-center justify-center gap-3 hover:bg-[#4752c4] transition-all transform hover:scale-[1.02]">
+        <h1 class="text-6xl md:text-8xl font-black tracking-tighter uppercase mb-12">ECLIPSE <span class="text-purple-600">SOFTWARES</span></h1>
+        <div class="glass w-full max-w-[440px] p-10 rounded-[2.5rem]">
+            <button onclick="signInWithDiscord()" class="w-full bg-[#5865F2] py-5 rounded-2xl font-black uppercase flex items-center justify-center gap-3 hover:scale-[1.02] transition-all">
                 <i class="ri-discord-fill text-3xl"></i> Entrar com Discord
             </button>
         </div>
     </div>
 
     <div id="main-dashboard" class="hidden min-h-screen flex flex-col md:flex-row">
-        <aside class="w-full md:w-80 border-r border-white/5 p-8 flex flex-col glass">
+        <aside class="w-full md:w-80 border-r border-white/5 p-8 glass">
             <div class="flex items-center gap-4 mb-12 p-3 bg-white/5 rounded-2xl">
                 <img id="user-avatar" src="" class="w-12 h-12 rounded-xl border border-purple-600/50">
                 <div class="overflow-hidden">
-                    <div id="user-display" class="font-black text-white uppercase truncate text-sm">Usuário</div>
-                    <div id="user-badge" class="text-[9px] text-zinc-500 font-black uppercase">Verificando...</div>
+                    <div id="user-display" class="font-black uppercase truncate text-sm">Usuário</div>
+                    <div id="user-badge" class="text-[9px] text-zinc-500 font-black uppercase font-bold">Verificando...</div>
                 </div>
             </div>
-            <nav class="space-y-2 flex-1">
-                <button onclick="switchTab('tab-home', this)" class="tab-btn active w-full flex items-center gap-4 p-4 rounded-xl text-zinc-500 font-bold hover:text-white transition-all">
-                    <i class="ri-dashboard-3-line"></i> DASHBOARD
-                </button>
-                <button onclick="switchTab('tab-license', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-xl text-zinc-500 font-bold hover:text-white transition-all">
-                    <i class="ri-key-2-line"></i> LICENÇA
-                </button>
-                <button onclick="switchTab('tab-admin', this)" id="admin-menu" class="hidden tab-btn w-full flex items-center gap-4 p-4 rounded-xl text-red-500/50 font-bold hover:text-red-500 transition-all">
-                    <i class="ri-shield-user-line"></i> ADMINISTRAÇÃO
-                </button>
+            <nav class="space-y-2">
+                <button onclick="switchTab('tab-home', this)" class="tab-btn active w-full flex items-center gap-4 p-4 rounded-xl font-bold">DASHBOARD</button>
+                <button onclick="switchTab('tab-license', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-xl font-bold">LICENÇA</button>
+                <button onclick="switchTab('tab-admin', this)" id="admin-menu" class="hidden tab-btn w-full p-4 rounded-xl text-red-500 font-bold uppercase">ADMIN</button>
             </nav>
-            <button onclick="signOut()" class="p-4 mt-8 border border-white/5 rounded-xl text-zinc-500 font-bold hover:text-red-500 transition-all flex items-center justify-center gap-2">
-                <i class="ri-logout-box-r-line"></i> DESLOGAR
-            </button>
+            <button onclick="signOut()" class="w-full mt-auto p-4 text-zinc-500 font-bold hover:text-red-500">SAIR</button>
         </aside>
 
         <main class="flex-1 p-8 md:p-16">
             <div id="tab-home" class="tab-content active">
-                <h1 class="text-5xl font-black mb-10 tracking-tighter uppercase">Painel <span class="text-purple-600">Eclipse</span></h1>
+                <h1 class="text-5xl font-black mb-10 uppercase italic">PAINEL <span class="text-purple-600">ECLIPSE</span></h1>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="glass p-8 rounded-[2rem]">
-                        <h3 class="text-zinc-500 font-bold mb-4 uppercase text-xs tracking-widest">Sincronizar Roblox</h3>
+                        <h3 class="text-zinc-500 font-bold mb-4 uppercase text-xs">Roblox ID</h3>
                         <div id="roblox-status" class="text-xl font-black mb-6 text-red-500 uppercase">Não Vinculado</div>
-                        <input id="roblox-id-input" type="text" placeholder="ID do Roblox" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-4 outline-none focus:border-purple-600 transition-all text-sm font-bold">
-                        <button onclick="updateRobloxID()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase text-xs hover:bg-purple-600 hover:text-white transition-all">Vincular Agora</button>
-                        <p class="text-[9px] text-zinc-600 mt-4 uppercase font-bold">* Requer assinatura ativa para vincular.</p>
+                        <input id="roblox-id-input" type="text" placeholder="ID do Roblox" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-4 outline-none">
+                        <button onclick="updateRobloxID()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase hover:bg-purple-600 hover:text-white transition-all">Sincronizar ID</button>
                     </div>
                     <div class="glass p-8 rounded-[2rem]">
-                        <h3 class="text-zinc-500 font-bold mb-4 uppercase text-xs tracking-widest">Status da Conta</h3>
-                        <div id="access-status" class="text-xl font-black mb-6 text-red-500 uppercase">Sem Assinatura</div>
-                        <a href="https://discord.gg/yHN3P4BVNc" target="_blank" class="block w-full bg-purple-600 py-4 rounded-xl font-black text-center text-xs uppercase hover:bg-purple-500 transition-all">Comprar Acesso</a>
+                        <h3 class="text-zinc-500 font-bold mb-4 uppercase text-xs">Assinatura</h3>
+                        <div id="access-status" class="text-xl font-black mb-6 text-red-500 uppercase">Inativa</div>
+                        <a href="https://discord.gg/yHN3P4BVNc" target="_blank" class="block w-full bg-purple-600 py-4 rounded-xl font-black text-center uppercase">Comprar</a>
                     </div>
                 </div>
             </div>
 
             <div id="tab-license" class="tab-content">
-                <h1 class="text-4xl font-black mb-10 uppercase">Resgatar Key</h1>
+                <h1 class="text-4xl font-black mb-10 uppercase">Ativar Key</h1>
                 <div class="glass p-10 rounded-[2.5rem] max-w-xl">
-                    <input id="license-key-input" type="text" placeholder="ECLIPSE-XXXX" class="w-full bg-white/5 border border-white/10 p-5 rounded-xl outline-none focus:border-purple-600 mb-4 text-center font-mono text-xl uppercase tracking-widest">
-                    <button onclick="redeemKey()" class="w-full bg-purple-600 py-5 rounded-xl font-black uppercase tracking-widest hover:bg-purple-500 transition-all shadow-lg shadow-purple-600/20">Ativar Assinatura</button>
+                    <input id="license-key-input" type="text" placeholder="ECLIPSE-XXXX" class="w-full bg-white/5 border border-white/10 p-5 rounded-xl text-center font-mono text-xl mb-4">
+                    <button onclick="redeemKey()" class="w-full bg-purple-600 py-5 rounded-xl font-black uppercase shadow-lg">Ativar Agora</button>
                 </div>
             </div>
 
             <div id="tab-admin" class="tab-content">
-                <h1 class="text-4xl font-black mb-10 text-red-500 uppercase">Gerar Keys</h1>
-                <div class="glass p-10 rounded-[2.5rem] max-w-xl">
-                    <div class="flex gap-4 mb-6">
-                        <input id="days-count" type="number" value="30" class="w-24 bg-white/5 border border-white/10 p-4 rounded-xl outline-none text-center font-bold">
-                        <button onclick="createKey()" class="flex-1 bg-white text-black py-4 rounded-xl font-black uppercase text-sm hover:bg-zinc-200 transition-all">Gerar Key</button>
-                    </div>
-                    <div id="key-output" onclick="copyKey()" class="p-6 bg-purple-600/10 border-2 border-dashed border-purple-600/30 rounded-xl font-mono text-center text-purple-500 font-black text-lg hidden cursor-pointer"></div>
+                <h1 class="text-4xl font-black mb-10 text-red-500 uppercase">Gerador</h1>
+                <div class="glass p-10 rounded-[2.5rem] max-w-xl text-center">
+                    <input id="days-count" type="number" value="30" class="w-24 bg-white/5 p-4 rounded-xl text-center font-bold mb-4">
+                    <button onclick="createKey()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase">Gerar Key</button>
+                    <div id="key-output" onclick="copyKey()" class="p-6 mt-4 bg-purple-600/10 border-2 border-dashed border-purple-600/30 rounded-xl font-mono text-purple-500 font-black text-lg hidden cursor-pointer"></div>
                 </div>
             </div>
         </main>
@@ -106,90 +89,83 @@
     <script>
         const SUPABASE_URL = 'https://dfplxmdhstpnptlmopyv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmcGx4mWRoc3RwbnB0bG1vcHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODgxODksImV4cCI6MjA4ODE2NDE4OX0.ZKQx1ZL3HOSRHwltgD6Sc2Uf1dfPaumb0UpawN3N8ZQ';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        function showToast(msg, type = 'success') {
-            const container = document.getElementById('notification-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.style.borderLeft = type === 'success' ? '4px solid #a855f7' : '4px solid #ef4444';
-            toast.innerHTML = `<span class="font-bold text-sm uppercase">${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+        function showToast(m, t='success') {
+            const c = document.getElementById('notification-container');
+            const d = document.createElement('div');
+            d.className = 'toast';
+            d.style.borderLeft = t === 'success' ? '4px solid #a855f7' : '4px solid #ef4444';
+            d.innerHTML = `<span class="font-bold text-sm uppercase">${m}</span>`;
+            c.appendChild(d); setTimeout(() => d.remove(), 4000);
         }
 
         async function signInWithDiscord() {
-            await supabaseClient.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.origin } });
+            await supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.origin } });
         }
 
-        async function checkUser() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (user) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('main-dashboard').classList.remove('hidden');
-                document.getElementById('user-display').innerText = user.user_metadata.full_name || "Membro";
-                document.getElementById('user-avatar').src = user.user_metadata.avatar_url;
+        async function loadDashboard(user) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-dashboard').classList.remove('hidden');
+            document.getElementById('user-display').innerText = user.user_metadata.full_name;
+            document.getElementById('user-avatar').src = user.user_metadata.avatar_url;
 
-                const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
-                if (profile) {
-                    if (profile.is_admin) document.getElementById('admin-menu').classList.remove('hidden');
-                    if (profile.has_access) {
-                        document.getElementById('access-status').innerText = "ASSINATURA ATIVA";
-                        document.getElementById('access-status').classList.replace('text-red-500', 'text-green-500');
-                        document.getElementById('user-badge').innerText = "CLIENTE ECLIPSE";
-                        document.getElementById('user-badge').classList.replace('text-zinc-500', 'text-purple-500');
-                    }
-                    if (profile.roblox_id) {
-                        document.getElementById('roblox-status').innerText = "VINCULADO: " + profile.roblox_id;
-                        document.getElementById('roblox-status').classList.replace('text-red-500', 'text-green-500');
-                    }
-                }
+            let { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+            if (!profile) {
+                const { data: newProfile } = await supabase.from('profiles').insert([{ id: user.id, username: user.user_metadata.full_name, has_access: false }]).select().single();
+                profile = newProfile;
+            }
+
+            if (profile.is_admin) document.getElementById('admin-menu').classList.remove('hidden');
+            if (profile.has_access) {
+                const s = document.getElementById('access-status');
+                s.innerText = "ATIVA"; s.classList.replace('text-red-500', 'text-green-500');
+                document.getElementById('user-badge').innerText = "ASSINANTE";
+            }
+            if (profile.roblox_id) {
+                const r = document.getElementById('roblox-status');
+                r.innerText = "VINCULADO: " + profile.roblox_id; r.classList.replace('text-red-500', 'text-green-500');
             }
         }
 
         async function updateRobloxID() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const { data: profile } = await supabaseClient.from('profiles').select('has_access').eq('id', user.id).single();
-
-            if (!profile || !profile.has_access) {
-                return showToast("Assine primeiro para vincular o ID!", "error");
-            }
-
-            const val = document.getElementById('roblox-id-input').value;
-            if (!val || isNaN(val)) return showToast("Digite um ID válido", "error");
+            const { data: { user } } = await supabase.auth.getUser();
+            const { data: p } = await supabase.from('profiles').select('has_access').eq('id', user.id).single();
+            if (!p.has_access) return showToast("Assine primeiro!", "error");
             
-            await supabaseClient.from('profiles').update({ roblox_id: val, username: user.user_metadata.full_name, avatar_url: user.user_metadata.avatar_url }).eq('id', user.id);
-            showToast('ID Sincronizado!'); location.reload();
+            const rid = document.getElementById('roblox-id-input').value;
+            await supabase.from('profiles').update({ roblox_id: rid }).eq('id', user.id);
+            showToast("ID Sincronizado!"); location.reload();
         }
 
         async function redeemKey() {
-            const k = document.getElementById('license-key-input').value;
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const { data: keyData } = await supabaseClient.from('license_keys').select('*').eq('key_code', k).is('used_by', null).single();
-
-            if (!keyData) return showToast('Key inválida ou já usada', 'error');
-
-            await supabaseClient.from('license_keys').update({ used_by: user.id, used_at: new Date() }).eq('id', keyData.id);
-            await supabaseClient.from('profiles').update({ has_access: true }).eq('id', user.id);
-            showToast('Assinatura Ativada!'); location.reload();
+            const { data: { user } } = await supabase.auth.getUser();
+            const key = document.getElementById('license-key-input').value;
+            const { data: kData } = await supabase.from('license_keys').select('*').eq('key_code', key).is('used_by', null).single();
+            
+            if (!kData) return showToast("Key inválida!", "error");
+            await supabase.from('license_keys').update({ used_by: user.id, used_at: new Date() }).eq('id', kData.id);
+            await supabase.from('profiles').update({ has_access: true }).eq('id', user.id);
+            showToast("Acesso Liberado!"); location.reload();
         }
 
         async function createKey() {
-            const key = 'ECLIPSE-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-            await supabaseClient.from('license_keys').insert([{ key_code: key, duration_days: document.getElementById('days-count').value }]);
-            const out = document.getElementById('key-output');
-            out.innerText = key; out.classList.remove('hidden');
-            showToast('Key Gerada!');
+            const k = "ECLIPSE-" + Math.random().toString(36).substr(2,9).toUpperCase();
+            await supabase.from('license_keys').insert([{ key_code: k, duration_days: document.getElementById('days-count').value }]);
+            document.getElementById('key-output').innerText = k;
+            document.getElementById('key-output').classList.remove('hidden');
         }
 
-        function copyKey() { navigator.clipboard.writeText(document.getElementById('key-output').innerText); showToast("Copiada!"); }
-        function switchTab(id, btn) {
+        function switchTab(id, b) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active'); btn.classList.add('active');
+            document.getElementById(id).classList.add('active');
         }
-        async function signOut() { await supabaseClient.auth.signOut(); location.reload(); }
-        window.onload = checkUser;
+
+        async function signOut() { await supabase.auth.signOut(); location.reload(); }
+
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (session) loadDashboard(session.user);
+        });
     </script>
 </body>
 </html>
