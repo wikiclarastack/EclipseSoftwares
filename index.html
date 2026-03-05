@@ -1,78 +1,180 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Eclipse | Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eclipse Softwares | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { background-color: #020202; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass { background: rgba(15, 15, 15, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        .glass { background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        .purple-glow { box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); }
     </style>
 </head>
-<body>
-    <div id="login-screen" class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-        <h1 class="text-6xl font-black mb-12 uppercase italic">ECLIPSE <span class="text-purple-600">SOFTWARES</span></h1>
-        <div class="glass w-full max-w-[400px] p-10 rounded-[2.5rem]">
-            <button id="btn-discord" class="w-full bg-[#5865F2] py-5 rounded-2xl font-black uppercase flex items-center justify-center gap-3">
-                <i class="ri-discord-fill text-3xl"></i> Entrar com Discord
-            </button>
+<body class="min-h-screen">
+
+    <div id="login-screen" class="flex min-h-screen items-center justify-center p-6">
+        <div class="text-center">
+            <h1 class="text-7xl font-black tracking-tighter mb-8 italic">ECLIPSE <span class="text-purple-600">SOFTWARES</span></h1>
+            <div class="glass p-10 rounded-[2.5rem] w-full max-w-md">
+                <button id="login-btn" class="w-full bg-[#5865F2] py-5 rounded-2xl font-black uppercase flex items-center justify-center gap-3 hover:scale-105 transition-all">
+                    <i class="ri-discord-fill text-3xl"></i> Entrar com Discord
+                </button>
+            </div>
         </div>
     </div>
 
-    <div id="main-dashboard" class="hidden min-h-screen flex">
-        <main class="flex-1 p-16">
-            <h1 class="text-5xl font-black mb-10">PAINEL <span class="text-purple-600">ECLIPSE</span></h1>
-            <div class="glass p-8 rounded-[2rem] max-w-md">
-                <h3 class="text-zinc-500 font-bold mb-4 uppercase text-xs">Roblox ID</h3>
-                <div id="roblox-status" class="text-xl font-black mb-6 text-red-500">NÃO VINCULADO</div>
-                <input id="roblox-id-input" type="text" placeholder="ID do Roblox" class="w-full bg-white/5 p-4 rounded-xl mb-4 outline-none border border-white/10">
-                <button onclick="updateRobloxID()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase">Sincronizar ID</button>
+    <div id="main-dashboard" class="hidden min-h-screen flex flex-col md:flex-row">
+        <aside class="w-full md:w-72 border-r border-white/5 p-6 glass flex flex-col">
+            <div class="flex items-center gap-3 mb-10 p-4 bg-white/5 rounded-2xl">
+                <img id="user-pic" src="" class="w-12 h-12 rounded-lg border border-purple-500">
+                <div class="overflow-hidden">
+                    <p id="user-name" class="font-black text-sm uppercase truncate">Carregando...</p>
+                    <p id="user-status" class="text-[10px] text-zinc-500 font-bold uppercase">Verificando...</p>
+                </div>
+            </div>
+            
+            <nav class="space-y-2 flex-1">
+                <button onclick="showTab('home')" class="w-full text-left p-4 rounded-xl font-bold hover:bg-white/5 transition-all flex items-center gap-3">
+                    <i class="ri-dashboard-line"></i> DASHBOARD
+                </button>
+                <button onclick="showTab('license')" class="w-full text-left p-4 rounded-xl font-bold hover:bg-white/5 transition-all flex items-center gap-3">
+                    <i class="ri-key-line"></i> LICENÇA
+                </button>
+                <button id="admin-tab-btn" onclick="showTab('admin')" class="hidden w-full text-left p-4 rounded-xl font-bold text-red-500 hover:bg-red-500/10 transition-all flex items-center gap-3">
+                    <i class="ri-shield-user-line"></i> ADMIN
+                </button>
+            </nav>
+
+            <button onclick="logout()" class="p-4 text-zinc-500 font-bold hover:text-red-500 transition-all text-sm uppercase">Sair da Conta</button>
+        </aside>
+
+        <main class="flex-1 p-8 md:p-12">
+            <div id="home" class="tab-content active">
+                <h2 class="text-4xl font-black mb-10 italic uppercase">Dashboard <span class="text-purple-600">Eclipse</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass p-8 rounded-3xl">
+                        <p class="text-zinc-500 font-bold text-xs uppercase mb-4">Sincronização</p>
+                        <h4 id="rbx-status-text" class="text-2xl font-black text-red-500 mb-6 uppercase italic">Não Vinculado</h4>
+                        <input id="rbx-id-input" type="text" placeholder="ID do seu Roblox" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-4 outline-none focus:border-purple-600 transition-all">
+                        <button onclick="syncID()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase hover:bg-purple-600 hover:text-white transition-all">Sincronizar Agora</button>
+                    </div>
+                    <div class="glass p-8 rounded-3xl">
+                        <p class="text-zinc-500 font-bold text-xs uppercase mb-4">Status do Script</p>
+                        <h4 id="access-status-text" class="text-2xl font-black text-red-500 mb-6 uppercase italic">Sem Assinatura</h4>
+                        <a href="https://discord.gg/suaservidor" class="block w-full bg-purple-600 py-4 rounded-xl font-black text-center uppercase">Obter Acesso</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="license" class="tab-content">
+                <h2 class="text-4xl font-black mb-10 uppercase">Ativar <span class="text-purple-600">Key</span></h2>
+                <div class="glass p-8 rounded-3xl max-w-lg">
+                    <input id="key-input" type="text" placeholder="ECLIPSE-XXXX-XXXX" class="w-full bg-white/5 border border-white/10 p-5 rounded-xl mb-6 text-center font-mono text-xl">
+                    <button onclick="activateKey()" class="w-full bg-purple-600 py-5 rounded-xl font-black uppercase shadow-lg hover:bg-purple-500 transition-all">Resgatar Agora</button>
+                </div>
+            </div>
+
+            <div id="admin" class="tab-content">
+                <h2 class="text-4xl font-black mb-10 text-red-500 uppercase italic">Gerador de Keys</h2>
+                <div class="glass p-8 rounded-3xl max-w-lg">
+                    <label class="block text-zinc-500 font-bold mb-2 uppercase text-xs">Dias de Duração</label>
+                    <input id="key-days" type="number" value="30" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-6 font-bold">
+                    <button onclick="generateKey()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase mb-4">Gerar Nova Key</button>
+                    <div id="key-result" class="hidden p-4 bg-purple-600/20 border border-purple-500/50 rounded-xl text-center font-mono font-bold text-purple-400"></div>
+                </div>
             </div>
         </main>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://dfplxmdhstpnptlmopyv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmcGx4mWRoc3RwbnB0bG1vcHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODgxODksImV4cCI6MjA4ODE2NDE4OX0.ZKQx1ZL3HOSRHwltgD6Sc2Uf1dfPaumb0UpawN3N8ZQ';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SB_URL = 'https://dfplxmdhstpnptlmopyv.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmcGx4mWRoc3RwbnB0bG1vcHl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODgxODksImV4cCI6MjA4ODE2NDE4OX0.ZKQx1ZL3HOSRHwltgD6Sc2Uf1dfPaumb0UpawN3N8ZQ';
+        const supabase = window.supabase.createClient(SB_URL, SB_KEY);
 
-        // Define a função ANTES de qualquer clique
-        async function signInWithDiscord() {
-            console.log("Iniciando login...");
-            await supabase.auth.signInWithOAuth({ 
-                provider: 'discord', 
-                options: { redirectTo: window.location.origin } 
-            });
+        // Inicialização Segura
+        window.onload = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) renderDash(session.user);
+            
+            document.getElementById('login-btn').onclick = () => {
+                supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.origin } });
+            };
+        };
+
+        async function renderDash(user) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-dashboard').classList.remove('hidden');
+            
+            document.getElementById('user-name').innerText = user.user_metadata.full_name;
+            document.getElementById('user-pic').src = user.user_metadata.avatar_url;
+
+            let { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+            
+            if (!profile) {
+                const { data } = await supabase.from('profiles').insert([{ id: user.id, username: user.user_metadata.full_name, avatar_url: user.user_metadata.avatar_url }]).select().single();
+                profile = data;
+            }
+
+            if (profile.is_admin) document.getElementById('admin-tab-btn').classList.remove('hidden');
+            if (profile.has_access) {
+                document.getElementById('access-status-text').innerText = "Assinatura Ativa";
+                document.getElementById('access-status-text').className = "text-2xl font-black text-green-500 mb-6 uppercase italic";
+                document.getElementById('user-status').innerText = "Cliente Eclipse";
+                document.getElementById('user-status').classList.replace('text-zinc-500', 'text-purple-500');
+            }
+            if (profile.roblox_id) {
+                document.getElementById('rbx-status-text').innerText = "Vinculado: " + profile.roblox_id;
+                document.getElementById('rbx-status-text').className = "text-2xl font-black text-green-500 mb-6 uppercase italic";
+            }
         }
 
-        // Atribui o evento via ID para evitar o erro de "not defined"
-        document.getElementById('btn-discord').onclick = signInWithDiscord;
+        async function syncID() {
+            const { data: { session } } = await supabase.auth.getSession();
+            const { data: p } = await supabase.from('profiles').select('has_access').eq('id', session.user.id).single();
+            
+            if (!p.has_access) return alert("ERRO: Você precisa de uma assinatura ativa para vincular um ID!");
 
-        async function updateRobloxID() {
-            const { data: { user } } = await supabase.auth.getUser();
-            const rid = document.getElementById('roblox-id-input').value;
-            
-            // Agora salvando username e avatar para o script Lua usar
-            await supabase.from('profiles').update({ 
-                roblox_id: rid,
-                username: user.user_metadata.full_name,
-                avatar_url: user.user_metadata.avatar_url 
-            }).eq('id', user.id);
-            
-            alert("Sincronizado!"); location.reload();
+            const id = document.getElementById('rbx-id-input').value;
+            if (!id || isNaN(id)) return alert("Digite um ID numérico válido!");
+
+            await supabase.from('profiles').update({ roblox_id: id }).eq('id', session.user.id);
+            location.reload();
         }
+
+        async function activateKey() {
+            const key = document.getElementById('key-input').value;
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            const { data: kData } = await supabase.from('license_keys').select('*').eq('key_code', key).is('used_by', null).single();
+            if (!kData) return alert("Key Inválida ou já utilizada!");
+
+            await supabase.from('license_keys').update({ used_by: session.user.id, used_at: new Date() }).eq('id', kData.id);
+            await supabase.from('profiles').update({ has_access: true }).eq('id', session.user.id);
+            alert("Sucesso! Acesso liberado."); location.reload();
+        }
+
+        async function generateKey() {
+            const k = "ECLIPSE-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+            await supabase.from('license_keys').insert([{ key_code: k, duration_days: document.getElementById('key-days').value }]);
+            const res = document.getElementById('key-result');
+            res.innerText = k; res.classList.remove('hidden');
+        }
+
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        async function logout() { await supabase.auth.signOut(); location.reload(); }
 
         supabase.auth.onAuthStateChange((event, session) => {
-            if (session) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('main-dashboard').classList.remove('hidden');
-            }
+            if (session) renderDash(session.user);
         });
     </script>
 </body>
